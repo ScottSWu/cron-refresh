@@ -1,0 +1,50 @@
+.app {
+  width: 100%;
+  font-size: 1.5rem;
+
+  input {
+    font-size: 1.25rem;
+    &:read-only {
+      background-color: lightgray;
+    }
+  }
+}
+
+.sites {
+  width: 100%;
+  .site {
+    width: 100%;
+    margin: 0.5rem 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+
+    .delete {
+      height: 2.5rem;
+      padding: 0 1rem;
+      color: red;
+      &:hover {
+        background-color: rgba(255, 0, 0, 0.1);
+      }
+    }
+    .cron {
+      width: 12rem;
+      height: 2rem;
+    }
+    .url {
+      flex-grow: 1;
+      height: 2rem;
+    }
+    .running {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+}
+
+.add {
+  &:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+  }
+}
