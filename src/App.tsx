@@ -1,6 +1,8 @@
 import { CronJob } from "cron";
 import { List } from "immutable";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+
+import useStateLocalStorage from "./useStateLocalStorage";
 
 import styles from "./App.module.scss";
 
@@ -34,32 +36,27 @@ function Sites(props: {
   onDelete: (index: number) => void;
   onUpdate: (k: Iterable<unknown>, v: unknown) => void;
 }) {
+  const { sites, onDelete, onUpdate } = props;
+
   const elements = useMemo(() => {
-    return props.sites.map((site, index) => {
+    return sites.map((site, index) => {
       return (
         <div key={index} className={styles.site}>
-          <button
-            className={styles.delete}
-            onClick={() => props.onDelete(index)}
-          >
+          <button className={styles.delete} onClick={() => onDelete(index)}>
             &times;
           </button>
           <input
             className={styles.cron}
             type="text"
             value={site.cron}
-            onChange={(event) =>
-              props.onUpdate([index, "cron"], event.target.value)
-            }
+            onChange={(event) => onUpdate([index, "cron"], event.target.value)}
             readOnly={site.running}
           />
           <input
             className={styles.url}
             type="text"
             value={site.url}
-            onChange={(event) =>
-              props.onUpdate([index, "url"], event.target.value)
-            }
+            onChange={(event) => onUpdate([index, "url"], event.target.value)}
             readOnly={site.running}
           />
           <input
@@ -67,13 +64,13 @@ function Sites(props: {
             type="checkbox"
             checked={site.running}
             onChange={(event) =>
-              props.onUpdate([index, "running"], event.target.checked)
+              onUpdate([index, "running"], event.target.checked)
             }
           />
         </div>
       );
     });
-  }, [props.onDelete, props.onUpdate, props.sites]);
+  }, [onDelete, onUpdate, sites]);
 
   return <div className={styles.sites}>{elements}</div>;
 }
@@ -87,7 +84,19 @@ function AddButton(props: { onAdd: () => void }) {
 }
 
 export default function App() {
-  const [sites, setSites] = useState<List<Site>>(List());
+  const [sites, setSites] = useStateLocalStorage<List<Site>>(
+    "sites",
+    List(),
+    (l: List<Site>) => JSON.stringify(l.toArray()),
+    // Reset running to false
+    (s: string) =>
+      List(
+        JSON.parse(s).map((s: any) => {
+          s.running = false;
+          return s;
+        })
+      )
+  );
   const runners = useRef<Map<number, Runner>>(new Map());
   const handles = useRef<Map<number, Window>>(new Map());
 
@@ -95,7 +104,7 @@ export default function App() {
     setSites((prevSites) =>
       prevSites.push({
         id: Date.now(),
-        cron: "0 * * * * *",
+        cron: "0 0 * * * *",
         url: "https://reddit.com",
         running: false,
       })
