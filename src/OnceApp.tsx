@@ -20,7 +20,7 @@ export default function OnceApp() {
       }, 10000);
     } else {
       setTimeout(() => {
-        //window.close();
+        window.close();
       }, 3000);
     }
   }, []);
