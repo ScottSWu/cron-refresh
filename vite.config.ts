@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "index.html"),
         once: resolve(__dirname, "once/index.html"),
+        ws: resolve(__dirname, "ws/index.html"),
       },
     },
   },
