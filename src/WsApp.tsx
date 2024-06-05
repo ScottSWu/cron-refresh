@@ -37,6 +37,11 @@ function getUrl() {
   return params.get("url") ?? "";
 }
 
+function getTimeout() {
+  const params = new URLSearchParams(window.location.search);
+  return parseInt(params.get("timeout") ?? "10000");
+}
+
 interface Request {
   index: number;
   url: string;
@@ -53,7 +58,7 @@ function useRequests(
 
   useEffect(() => {
     const handleConnect = () => {
-      setStatus(`Conected (${url})`);
+      setStatus(`Connected (${url})`);
     };
     const handleDisconnect = () => {
       setStatus("Disconnected");
@@ -97,12 +102,11 @@ function useRefresher(): {
   log: List<string>;
   handleRequest: (r: Request) => void;
 } {
-  const OPEN_PAGE_TIMEOUT = 5000;
   const [log, setLog] = useState<List<string>>(List());
 
   const handleRequest = useCallback((r: Request) => {
     const w = window.open(r.url);
-    setTimeout(() => w?.close(), OPEN_PAGE_TIMEOUT);
+    setTimeout(() => w?.close(), getTimeout());
     addToLog(setLog, r);
   }, []);
 
